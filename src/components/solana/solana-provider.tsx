@@ -14,6 +14,7 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { ReactNode, useCallback, useMemo } from "react";
 import { useCluster } from "../cluster/cluster-data-access";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
+import { EnforceAndSendWalletWrapper } from "../useEnforceAndSendWallet";
 
 // 独自実装の接続ボタン（必要に応じて利用）
 import { SolflareConnectButton } from "../SolflareConnectButton";
@@ -47,11 +48,7 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
         <WalletModalProvider>
-          {/* 接続後にSolflare以外を検出して自動切断 */}
-          <EnforceSolflareWrapper />
-          {/* 接続されたウォレットアドレスをGoogleスプレッドシートへ送信 */}
-          <SendWalletAddressWrapper />
-          {children}
+          <EnforceAndSendWalletWrapper>{children}</EnforceAndSendWalletWrapper>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
