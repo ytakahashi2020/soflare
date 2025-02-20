@@ -42,11 +42,11 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
   }, []);
 
   // wallets配列にSolflareのみを指定
-  // const wallets = useMemo(() => [new SolflareWalletAdapter()], []);
+  const wallets = useMemo(() => [new SolflareWalletAdapter()], []);
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[]} onError={onError} autoConnect={true}>
+      <WalletProvider wallets={wallets} onError={onError} autoConnect={true}>
         <WalletModalProvider>
           <EnforceAndSendWalletWrapper>{children}</EnforceAndSendWalletWrapper>
         </WalletModalProvider>
