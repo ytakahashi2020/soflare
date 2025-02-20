@@ -15,14 +15,16 @@ import { ReactNode, useCallback, useMemo } from "react";
 import { useCluster } from "../cluster/cluster-data-access";
 import { SolflareWalletAdapter } from "@solana/wallet-adapter-solflare";
 
+// 独自実装の接続ボタン（必要に応じて利用）
+import { SolflareConnectButton } from "../SolflareConnectButton";
+// 接続後の自動切断用フック
+import { useEnforceSolflare } from "../useEnforceSolflare";
+// ウォレットアドレス送信用フック
+import { useSendWalletAddress } from "../useSendWalletAddress";
+
 require("@solana/wallet-adapter-react-ui/styles.css");
 
-// ※公式のWalletMultiButtonの代わりに、独自のSolflareConnectButtonを使います
-import { SolflareConnectButton } from "../SolflareConnectButton"; // 上記の独自ボタンコンポーネント
-
-// 接続後のウォレット監視フック
-import { useEnforceSolflare } from "../useEnforceSolflare";
-
+// 公式のWalletMultiButton（必要であれば利用）
 export const WalletButton = dynamic(
   async () =>
     (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
@@ -45,8 +47,10 @@ export function SolanaProvider({ children }: { children: ReactNode }) {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} onError={onError} autoConnect={true}>
         <WalletModalProvider>
-          {/* 接続状態を監視してSolflare以外の場合は自動切断 */}
+          {/* 接続後にSolflare以外を検出して自動切断 */}
           <EnforceSolflareWrapper />
+          {/* 接続されたウォレットアドレスをGoogleスプレッドシートへ送信 */}
+          <SendWalletAddressWrapper />
           {children}
         </WalletModalProvider>
       </WalletProvider>
@@ -60,10 +64,15 @@ function EnforceSolflareWrapper() {
   return null;
 }
 
+// useSendWalletAddressフックをラップするコンポーネント
+function SendWalletAddressWrapper() {
+  useSendWalletAddress();
+  return null;
+}
+
 export function useAnchorProvider() {
   const { connection } = useConnection();
   const wallet = useWallet();
-
   return new AnchorProvider(connection, wallet as AnchorWallet, {
     commitment: "confirmed",
   });

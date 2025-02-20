@@ -1,4 +1,3 @@
-// SolflareConnectButton.tsx
 "use client";
 
 import React, { useCallback } from "react";

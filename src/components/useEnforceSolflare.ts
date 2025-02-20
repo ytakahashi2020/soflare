@@ -1,4 +1,3 @@
-// useEnforceSolflare.ts
 "use client";
 
 import { useEffect } from "react";
